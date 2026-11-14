@@ -1,0 +1,19 @@
+  661| ENTRYRULE_ENTRY = """1. 按法医病理学条目体例排列字段，七项字段名的写法与顺序全档统一。
+  738|     # 手段类词命中则 lethal 降级为 behavior，避免直接 return ENTRYRULE_ENTRY 造成正文空转。
+  739|     if domain == "lethal" and any(k in (topic or "") for k in INCAP_KW):
+  742|     if domain in ("lethal", "medical"):
+  743|         return ENTRYRULE_ENTRY
+  775|     if domain in ("lethal", "medical"):
+  902| # 因为这类词会被 _LETHAL_SYN 抢先归类成 lethal，导致走 ENTRYRULE_ENTRY 空正文。
+  963| def classify_shape(topic):
+ 1202| def pick_target(topic):
+ 1248| def local_compose_body(topic):
+ 1262|         return "", ""
+ 1649|     _topic_line = (LETHAL_TOPIC if domain == "lethal"
+ 1931| def classify_domain(topic):
+ 2553|         return "", None
+ 2566|         return "", it
+ 2604|     return "", it
+ 3847|     if domain == "lethal":
+ 4097|         return "", 0, 0
+ 4381|     if domain == "lethal":
