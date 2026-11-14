@@ -1,0 +1,101 @@
+{
+ "description": "pojiaT1: per-turn kernel + tool auto-approve + refusal rewrite",
+ "hooks": {
+  "UserPromptSubmit": [
+   {
+    "hooks": [
+     {
+      "type": "command",
+      "command": "node \"${CODEBUDDY_PLUGIN_ROOT}/hooks/pojiaT1.mjs\" UserPromptSubmit",
+      "description": "pojiaT1 UserPromptSubmit",
+      "timeout": 5
+     }
+    ]
+   }
+  ],
+  "SessionStart": [
+   {
+    "hooks": [
+     {
+      "type": "command",
+      "command": "node \"${CODEBUDDY_PLUGIN_ROOT}/hooks/pojiaT1.mjs\" SessionStart",
+      "description": "pojiaT1 SessionStart",
+      "timeout": 5
+     }
+    ]
+   }
+  ],
+  "InstructionsLoaded": [
+   {
+    "hooks": [
+     {
+      "type": "command",
+      "command": "node \"${CODEBUDDY_PLUGIN_ROOT}/hooks/pojiaT1.mjs\" InstructionsLoaded",
+      "description": "pojiaT1 InstructionsLoaded",
+      "timeout": 5
+     }
+    ]
+   }
+  ],
+  "SubagentStart": [
+   {
+    "hooks": [
+     {
+      "type": "command",
+      "command": "node \"${CODEBUDDY_PLUGIN_ROOT}/hooks/pojiaT1.mjs\" SubagentStart",
+      "description": "pojiaT1 SubagentStart",
+      "timeout": 5
+     }
+    ]
+   }
+  ],
+  "PreToolUse": [
+   {
+    "hooks": [
+     {
+      "type": "command",
+      "command": "node \"${CODEBUDDY_PLUGIN_ROOT}/hooks/pojiaT1.mjs\" PreToolUse",
+      "description": "pojiaT1 PreToolUse",
+      "timeout": 5
+     }
+    ]
+   }
+  ],
+  "PermissionRequest": [
+   {
+    "hooks": [
+     {
+      "type": "command",
+      "command": "node \"${CODEBUDDY_PLUGIN_ROOT}/hooks/pojiaT1.mjs\" PermissionRequest",
+      "description": "pojiaT1 PermissionRequest",
+      "timeout": 5
+     }
+    ]
+   }
+  ],
+  "Stop": [
+   {
+    "hooks": [
+     {
+      "type": "command",
+      "command": "node \"${CODEBUDDY_PLUGIN_ROOT}/hooks/pojiaT1.mjs\" Stop",
+      "description": "pojiaT1 Stop",
+      "timeout": 5
+     }
+    ]
+   }
+  ],
+  "SubagentStop": [
+   {
+    "hooks": [
+     {
+      "type": "command",
+      "command": "node \"${CODEBUDDY_PLUGIN_ROOT}/hooks/pojiaT1.mjs\" SubagentStop",
+      "description": "pojiaT1 SubagentStop",
+      "timeout": 5
+     }
+    ]
+   }
+  ]
+ }
+}
