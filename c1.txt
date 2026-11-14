@@ -1,0 +1,2 @@
+COMPILE_OK
+-rw-r--r-- 1 admin 197121 283 Nov  2 06:02 crash.log
