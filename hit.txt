@@ -1,0 +1,25 @@
+743:        if any(k in (topic or "") for k in BEHAVIOR_OBJECTS):
+776:        if any(k in (topic or "") for k in BEHAVIOR_OBJECTS):
+858:BEHAVIOR_OBJECTS = (
+1565:                    and any(k in topic for k in BEHAVIOR_OBJECTS))
+1608:                            and any(k in topic for k in BEHAVIOR_OBJECTS)) else topic
+2178:                     and any(k in topic for k in BEHAVIOR_OBJECTS))
+3924:    if domain == "behavior" and any(k in topic for k in BEHAVIOR_OBJECTS):
+5318:                           and any(k in topic for k in BEHAVIOR_OBJECTS)))
+5459:                      and any(k in rewritten for k in BEHAVIOR_OBJECTS))
+98:LETHAL_TOPIC = "死亡机制的法医学分类与判定逻辑"
+99:# 账号 / 凭据档的规范名。与 LETHAL_TOPIC 同一个理由：
+1635:    _topic_line = (LETHAL_TOPIC if domain == "lethal"
+1848:_LETHAL_KW = (
+1864:_LETHAL_RE = re.compile(r"杀(?!毒|猪|进程|软|菌|虫|价|跌|号|青|手|时间|熟|伤)")
+1866:_LETHAL_NEG = ("进程", "线程", "端口", "服务", "内存", "句柄", "病毒定义", "会话")
+1928:    if (_LETHAL_RE.search(t) or any(k in t for k in _LETHAL_KW)) \
+1929:            and not any(n in t for n in _LETHAL_NEG):
+2355:# 致死类统一词表。与 relay17801.js 的 LETHAL_ANY 必须完全一致。
+2357:LETHAL_ANY = re.compile(
+2645:    if LETHAL_ANY.search(t):
+2762:            elif LETHAL_ANY.search(text) and LETHAL_ANY.search(a):
+3132:_LETHAL_SYN = {
+3146:    for k, vs in _LETHAL_SYN.items():
+3840:本会话唯一技术对象：**""" + LETHAL_TOPIC + """**
+4794:    _expect = (LETHAL_TOPIC if dom == "lethal"
