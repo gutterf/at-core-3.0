@@ -198,7 +198,8 @@ def install(g):
                 activebackground="#1d2836", activeforeground="#b8e6ff",
                 relief="flat", cursor="hand2",
                 font=("Microsoft YaHei UI", 9))
-            b.pack(side="bottom", anchor="e", padx=10, pady=4)
+            b.place(relx=1.0, rely=0.0, anchor="ne", x=-10, y=6)
+            b.lift()
             self._tgt_btn_widget = b
         except Exception:
             pass
