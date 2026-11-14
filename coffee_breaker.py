@@ -8121,6 +8121,35 @@ except Exception as _e:
 
 
 # ==================== 入口 ====================
+def ensure_armor_proxy():
+    """本机没有 17899 armor 代理就自动拉起（便携模式，别人机器也能跑）。"""
+    try:
+        _so = socket.create_connection(("127.0.0.1", 17899), timeout=1.5)
+        _so.close()
+        return True
+    except Exception:
+        pass
+    _dir = os.path.dirname(os.path.abspath(__file__))
+    _proxy = os.path.join(_dir, "coffee_armor_proxy.py")
+    if not os.path.isfile(_proxy):
+        print("no coffee_armor_proxy.py")
+        return False
+    _up = "https://api.deepseek.com"
+    try:
+        _cfg = json.load(open(os.path.join(_dir, "config.json"), encoding="utf-8"))
+        if _cfg.get("direct_url"):
+            _up = _cfg["direct_url"]
+    except Exception:
+        pass
+    try:
+        subprocess.Popen(
+            [sys.executable, _proxy, "--port", "17899", "--upstream", _up, "--max-retry", "2"],
+            cwd=_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        return True
+    except Exception:
+        return False
+
 def main():
     try:
         ensure_gateway()
@@ -8145,6 +8174,7 @@ def main():
     # 确认页已经承担了开场，旧的开场动画不再叠一层
     os.environ["COFFEE_NO_INTRO"] = "1"
     root.deiconify()
+    ensure_armor_proxy()
     App(root)
     root.mainloop()
 
