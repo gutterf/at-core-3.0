@@ -5358,6 +5358,12 @@ class App:
         glass_ui.enable_dark_title(root)
         glass_ui.set_icon(root)
 
+        if _SPLASH is not None:
+            try:
+                _SPLASH.set(45)
+
+            except Exception:
+                pass
         self.ui = glass_ui.GlassShell(
          root,
          on_run=self.toggle_breaker,
@@ -5822,95 +5828,117 @@ class App:
             pass
         return on
 
-    def inject_plugin_wb(self):
-        """把软件自带的 pojiaT1 插件注入 WorkBuddy 插件目录。"""
-        try:
-            import shutil as _sh
-            src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   "plugins", "pojiaT1")
-            dst_dir = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
-                                   "plugins", "pojiaT1")
-            if not os.path.isdir(src_dir):
-                self.logline("[插件] 软件自带插件包缺失: " + src_dir)
-                return
-            if os.path.isdir(dst_dir):
-                _sh.rmtree(dst_dir)
-            _sh.copytree(src_dir, dst_dir)
-            # 登记 marketplace.json
-            mp = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
-                              ".codebuddy-plugin", "marketplace.json")
-            try:
-                _d = json.load(open(mp, encoding="utf-8"))
-            except Exception:
-                _d = {"name": "wu-pojia", "plugins": []}
-            if not any(p.get("name") == "pojiaT1" for p in _d.get("plugins", [])):
-                _d.setdefault("plugins", []).append({
-                    "name": "pojiaT1",
-                    "description": "pojiaT1 break chain plugin",
-                    "source": "./plugins/pojiaT1",
-                    "category": "local",
-                    "version": "1.0.0",
-                })
-                with open(mp, "w", encoding="utf-8") as f:
-                    json.dump(_d, f, ensure_ascii=False, indent=2)
-            self.logline("[插件] pojiaT1 已注入 WorkBuddy，重启 WorkBuddy 生效")
-        except Exception as e:
-            self.logline("[插件] 注入失败 %r" % e)
 
-    def recall_plugin_wb(self):
-        """收回注入的 pojiaT1 插件。"""
+    def refresh_plugin_state(self):
+        """检测 pojiaT1 是否已注入，刷新右侧状态。"""
         try:
-            import shutil as _sh
-            dst_dir = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
-                                   "plugins", "pojiaT1")
-            if os.path.isdir(dst_dir):
-                _sh.rmtree(dst_dir)
-            mp = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
-                              ".codebuddy-plugin", "marketplace.json")
+            dst = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                               "plugins", "pojiaT1")
+            st = "已注入" if os.path.isdir(dst) else "未注入"
+            def _apply():
+                self.ui.set_env(plugin_state=st)
+                self.ui.set_plugin_state(st)
             try:
-                _d = json.load(open(mp, encoding="utf-8"))
-                _d["plugins"] = [p for p in _d.get("plugins", [])
-                                 if p.get("name") != "pojiaT1"]
-                with open(mp, "w", encoding="utf-8") as f:
-                    json.dump(_d, f, ensure_ascii=False, indent=2)
+                self.root.after(0, _apply)
             except Exception:
-                pass
-            self.logline("[插件] pojiaT1 已收回")
-        except Exception as e:
-            self.logline("[插件] 收回失败 %r" % e)
+                try:
+                    _apply()
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
 
     def inject_plugin_wb(self):
-        try:
-            import shutil as _sh
-            src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   "plugins", "pojiaT1")
-            dst_dir = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
-                                   "plugins", "pojiaT1")
-            if not os.path.isdir(src_dir):
-                self.logline("[pojiaT1] missing " + src_dir)
-                return
-            if os.path.isdir(dst_dir):
-                _sh.rmtree(dst_dir)
-            _sh.copytree(src_dir, dst_dir)
-            mp = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
-                               ".codebuddy-plugin", "marketplace.json")
+        if getattr(self, "_injecting", False):
+            return
+        self._injecting = True
+        def _run(pbar):
+            def _set(v):
+                try:
+                    pbar.set(v)
+                except Exception:
+                    pass
+            def _close():
+                try:
+                    pbar.close()
+                except Exception:
+                    pass
             try:
-                _d = json.load(open(mp, encoding="utf-8"))
-            except Exception:
-                _d = {"name": "wu-pojia", "plugins": []}
-            if not any(x.get("name") == "pojiaT1" for x in _d.get("plugins", [])):
-                _d.setdefault("plugins", []).append({
-                    "name": "pojiaT1",
-                    "description": "pojiaT1 break chain plugin",
-                    "source": "./plugins/pojiaT1",
-                    "category": "local",
-                    "version": "1.0.0",
-                })
-                with open(mp, "w", encoding="utf-8") as f:
-                    json.dump(_d, f, ensure_ascii=False, indent=2)
-            self.logline("[pojiaT1] injected, restart WorkBuddy")
-        except Exception as e:
-            self.logline("[pojiaT1] inject err %r" % e)
+                import shutil as _sh
+                if getattr(sys, "frozen", False):
+                    src_dir = os.path.join(getattr(sys, "_MEIPASS", ""), "plugins", "pojiaT1")
+                else:
+                    src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plugins", "pojiaT1")
+                dst_dir = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                                       "plugins", "pojiaT1")
+                if not os.path.isdir(src_dir):
+                    _set(100)
+                    _close()
+                    self.logline("[pojiaT1] missing " + src_dir)
+                    return
+                files = []
+                for _dp, _dn, _fn in os.walk(src_dir):
+                    for _f in _fn:
+                        files.append((_dp, _f))
+                if not files:
+                    files = [("", "")]
+                if os.path.isdir(dst_dir):
+                    _sh.move(dst_dir, dst_dir + '.old' + str(int(time.time())))
+                os.makedirs(dst_dir, exist_ok=True)
+                for _i, (_dp, _f) in enumerate(files):
+                    _sp = os.path.join(_dp, _f)
+                    _rel = os.path.relpath(_sp, src_dir)
+                    _dd = os.path.join(dst_dir, _rel)
+                    _pd = os.path.dirname(_dd)
+                    if _pd:
+                        os.makedirs(_pd, exist_ok=True)
+                    if os.path.isfile(_sp):
+                        _sh.copy2(_sp, _dd)
+                    _set(int((_i + 1) / len(files) * 100))
+                mp = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                                   ".codebuddy-plugin", "marketplace.json")
+                try:
+                    _d = json.load(open(mp, encoding="utf-8"))
+                except Exception:
+                    _d = {"name": "wu-pojia", "plugins": []}
+                if not any(x.get("name") == "pojiaT1" for x in _d.get("plugins", [])):
+                    _d.setdefault("plugins", []).append({
+                        "name": "pojiaT1",
+                        "description": "pojiaT1 break chain plugin",
+                        "source": "./plugins/pojiaT1",
+                        "category": "local",
+                        "version": "1.0.0",
+                    })
+                    with open(mp, "w", encoding="utf-8") as f:
+                        json.dump(_d, f, ensure_ascii=False, indent=2)
+                _set(100)
+                _close()
+                _now = time.time()
+                for _dp2, _dn2, _fn2 in os.walk(dst_dir):
+                    for _f2 in _fn2:
+                        try:
+                            os.utime(os.path.join(_dp2, _f2), (_now, _now))
+                        except Exception:
+                            pass
+                self.refresh_plugin_state()
+                self.logline("[pojiaT1] injected, live now")
+            except Exception as e:
+                _set(100)
+                _close()
+                self.refresh_plugin_state()
+                self.logline("[pojiaT1] inject err %r" % e)
+        try:
+            pbar = glass_ui.BatteryProgress(self.ui.root, "注入 pojiaT1 到 WorkBuddy")
+        except Exception:
+            self.logline("[pojiaT1] progress window fail")
+            return
+        def _th():
+            try:
+                _run(pbar)
+            finally:
+                self._injecting = False
+        threading.Thread(target=_th, daemon=True).start()
 
     def recall_plugin_wb(self):
         try:
@@ -5918,7 +5946,7 @@ class App:
             dst_dir = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
                                    "plugins", "pojiaT1")
             if os.path.isdir(dst_dir):
-                _sh.rmtree(dst_dir)
+                _sh.move(dst_dir, dst_dir + '.old' + str(int(time.time())))
             mp = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
                                ".codebuddy-plugin", "marketplace.json")
             try:
@@ -5929,6 +5957,7 @@ class App:
                     json.dump(_d, f, ensure_ascii=False, indent=2)
             except Exception:
                 pass
+            self.refresh_plugin_state()
             self.logline("[pojiaT1] recalled")
         except Exception as e:
             self.logline("[pojiaT1] recall err %r" % e)
@@ -8121,6 +8150,9 @@ except Exception as _e:
 
 
 # ==================== 入口 ====================
+_SPLASH = None
+
+
 def ensure_armor_proxy():
     """本机没有 17899 armor 代理就自动拉起（便携模式，别人机器也能跑）。"""
     try:
@@ -8175,7 +8207,18 @@ def main():
     os.environ["COFFEE_NO_INTRO"] = "1"
     root.deiconify()
     ensure_armor_proxy()
+    ensure_armor_proxy()
+    global _SPLASH
+    _SPLASH = glass_ui.BatteryProgress(root, "AT内核3.0 启动中")
+    _SPLASH.set(15)
+    root.update()
     App(root)
+    if _SPLASH is not None:
+        try:
+            _SPLASH.set(100)
+            _SPLASH.close()
+        except Exception:
+            pass
     root.mainloop()
 
 
