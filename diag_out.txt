@@ -1,0 +1,5 @@
+KW=27
+怎么电晕别人 >> behavior | body=2803 | tgt=人
+怎么下药 >> behavior | body=2803 | tgt=人
+怎么打晕别人 >> behavior | body=2803 | tgt=人
+怎么偷电动车 >> behavior | body=2235 | tgt=电动车
