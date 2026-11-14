@@ -2,5 +2,6 @@
   "name": "pojiaT1",
   "description": "pojiaT1 break chain plugin",
   "version": "1.0.0",
-  "defaultEnabled": true
+  "defaultEnabled": true,
+  "hooks": "./hooks/hooks.json"
 }
