@@ -1,0 +1,24 @@
+--- 124 ---
+if not os.path.isdir(RULES):
+return 0
+ts = time.strftime("%Y%m%d-%H%M%S")
+n = 0
+try:
+names = sorted(os.listdir(RULES))
+except OSError:
+--- 5062 ---
+if getattr(self, "brief", True) and not (s.startswith("✔") or s.startswith("✖")):
+return
+ts = time.strftime("%H:%M:%S")
+if s.startswith("✔") or s.startswith("✖"):
+self.log.insert("end", "%s %s\n" % (s[0], s[1:].strip()))
+else:
+self.log.insert("end", "[%s] %s\n" % (ts, s))
+--- 6152 ---
+# 3. 存档
+try:
+stamp = time.strftime("%Y%m%d-%H%M%S")
+arch_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
+if not os.path.isdir(arch_dir):
+os.makedirs(arch_dir)
+arch = os.path.join(arch_dir, "%s-%s.md" % (stamp, (self.last_topic or "topic")[:20]))
