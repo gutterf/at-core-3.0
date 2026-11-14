@@ -765,7 +765,8 @@ class GlassShell:
     RAIL_W = 260
     RAIL_GAP = 16
 
-    def __init__(self, root, on_run=None, on_inject=None, on_copy=None, on_fix=None, on_resume=None):
+    def __init__(self, root, on_run=None, on_inject=None, on_copy=None, on_fix=None, on_resume=None,
+                 on_inject_plugin=None, on_recall_plugin=None):
         self.root = root
         self.on_run = on_run
         self.on_inject = on_inject
@@ -822,6 +823,10 @@ class GlassShell:
         self.btn_run.shell = self
         self.btn_resume = GlassButton(root, "自动续任务会话", on_resume or (lambda: None), "violet")
         self.btn_resume.shell = self
+        self.btn_inject_plugin = GlassButton(root, "注入插件 workbuddy", on_inject_plugin or (lambda: None), "violet")
+        self.btn_inject_plugin.shell = self
+        self.btn_recall_plugin = GlassButton(root, "插件收回", on_recall_plugin or (lambda: None), "ghost")
+        self.btn_recall_plugin.shell = self
         # 高级按钮「全自动修复 · 链路诊断与自愈」已按要求移除（2026-11-14）
         self.btn_fix = None
         # 兼容旧引用：注入/投递已下线，属性留空避免外部 AttributeError
@@ -926,11 +931,15 @@ class GlassShell:
         # 全自动修复：整条宽，做成带彩虹边的"高级"样式
         fy = by + bh + 18
         self.btn_resume.place(x=M, y=fy, width=pw, height=46)
+        fy2 = fy + 46 + 8
+        self.btn_inject_plugin.place(x=M, y=fy2, width=pw, height=40)
+        fy3 = fy2 + 40 + 6
+        self.btn_recall_plugin.place(x=M, y=fy3, width=pw, height=40)
         self._draw_fix_accent(M, fy, pw, 46)
 # [DELETED 20261114]         self.btn_fix.place(x=M, y=fy, width=pw, height=46)
 # [DELETED 20261114]         self._draw_fix_accent(M, fy, pw, 46)
 
-        ty = fy + 46 + 14
+        ty = fy3 + 40 + 14
         self.tabs.place(x=M, y=ty, width=min(480, pw), height=44)
         cy = ty + 44 + 12
         ch = max(170, H - cy - 64)
