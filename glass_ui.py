@@ -1031,7 +1031,7 @@ class GlassShell:
         except Exception:
             pass
 
-    def set_env(self, clock=None, weather=None, date=None, place=None, kwargs_city=None):
+    def set_env(self, clock=None, weather=None, date=None, place=None, kwargs_city=None, plugin_state=None):
         """weather 传整串就放右边一行；也可以单独传 place。"""
         if clock is not None:
             self.env_clock = clock
@@ -1045,6 +1045,8 @@ class GlassShell:
         if weather is not None:
             self.env_weather = weather
             self.env_data["place"] = weather
+        if plugin_state is not None:
+            self.env_data["plugin_state"] = plugin_state
         try:
             self.env_panel.redraw()
         except Exception:
@@ -1069,6 +1071,28 @@ class GlassShell:
         b.create_line(rx + 4, H - 138, rx + 128, H - 138, fill="#243543", width=1, tags="rail")
 
     # -- 实时状态（数据来自 k19 的 /status，不是写死的文案）--
+    def set_plugin_state(self, v):
+        self.plugin_state = v
+        try:
+            W = self.root.winfo_width()
+            H = self.root.winfo_height()
+            if W >= 400 and H >= 400:
+                pw = W - 2 * self.M - self.RAIL_W - self.RAIL_GAP
+                self._draw_rail(W, H, self.M, pw)
+        except Exception:
+            pass
+
+    def set_plugin_state(self, v):
+        self.plugin_state = v
+        try:
+            W = self.root.winfo_width()
+            H = self.root.winfo_height()
+            if W >= 400 and H >= 400:
+                pw = W - 2 * self.M - self.RAIL_W - self.RAIL_GAP
+                self._draw_rail(W, H, self.M, pw)
+        except Exception:
+            pass
+    
     def set_live(self, st):
         """st = {breaker, lanes, layers[], plain, lib, cache{rate}, verify, model}"""
         self.live = st or {}
@@ -1122,6 +1146,8 @@ class GlassShell:
         row("自检", (st.get("verify") or "—")[:14],
             "#F0B37E" if "REJECT" in (st.get("verify") or "") else "#9FE7C9")
         row("上游模型", st.get("model") or "—")
+        ps = getattr(self, "plugin_state", None) or "未注入"
+        row("插件", ps, "#3fb950" if "已注入" in ps else "#d29922")
 
         y0 += 6
         b.create_text(x, y0, anchor="nw", text="生效层",
@@ -1489,3 +1515,65 @@ def demo():
 
 if __name__ == "__main__":
     demo()
+
+
+class BatteryProgress:
+    """电池充电式进度浮层：set(0-100) 推进度，close() 关闭。"""
+    def __init__(self, root, title="处理中"):
+        import tkinter as tk
+        self.root = root
+        self.title = title
+        self.win = tk.Toplevel(root)
+        self.win.overrideredirect(True)
+        self.win.attributes("-topmost", True)
+        W, H = 300, 150
+        sw = root.winfo_screenwidth()
+        sh_ = root.winfo_screenheight()
+        x = (sw - W) // 2
+        y = (sh_ - H) // 2
+        self.win.geometry("%dx%d+%d+%d" % (W, H, x, y))
+        self.cv = tk.Canvas(self.win, width=W, height=H, bg="#0d1117", highlightthickness=0)
+        self.cv.pack(fill="both", expand=True)
+        # 圆角外框
+        self.cv.create_rectangle(8, 8, W - 8, H - 8, outline="#1f6feb", width=2)
+        self.cv.create_text(W // 2, 26, text=title, fill="#c9d1d9", font=("Microsoft YaHei UI", 11))
+        # 电池本体（左右各留边，宽 200，高 60）
+        self.bx1, self.by1 = 50, 46
+        self.bx2, self.by2 = 250, 106
+        # 电池头
+        self.cv.create_rectangle(252, 66, 262, 86, fill="#8b949e", outline="")
+        self.cv.create_rectangle(self.bx1, self.by1, self.bx2, self.by2,
+                                 outline="#8b949e", width=2)
+        self.pct = self.cv.create_text((self.bx1 + self.bx2) // 2,
+                                       (self.by1 + self.by2) // 2,
+                                       text="0%", fill="#ffffff",
+                                       font=("Microsoft YaHei UI", 16, "bold"))
+        self.fill = None
+        self.set(0)
+
+    def set(self, v):
+        v = max(0, min(100, int(v)))
+        if self.fill is not None:
+            self.cv.delete(self.fill)
+        pad = 5
+        inner_w = (self.bx2 - pad) - (self.bx1 + pad)
+        w = inner_w * v / 100
+        if v < 30:
+            color = "#f85149"
+        elif v < 70:
+            color = "#d29922"
+        else:
+            color = "#3fb950"
+        if w > 1:
+            self.fill = self.cv.create_rectangle(self.bx1 + pad, self.by1 + pad,
+                                                 self.bx1 + pad + w, self.by2 - pad,
+                                                 fill=color, outline="")
+        self.cv.itemconfig(self.pct, text="%d%%" % v)
+        self.cv.update()
+
+    def close(self):
+        try:
+            self.win.destroy()
+        except Exception:
+            pass
+
