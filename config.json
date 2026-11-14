@@ -1,0 +1,13 @@
+{
+  "mode": "local",
+  "api_url": "http://127.0.0.1:17812/chat/completions",
+  "api_key": "sk-d2a5393dbce44a7cad25e411adc26463",
+  "model": "deepseek-flash",
+  "temperature": "0.6",
+  "max_tokens": "8192",
+  "timeout": 300,
+  "local_url": "http://127.0.0.1:17812/chat/completions",
+  "direct_url": "https://api.deepseek.com/chat/completions",
+  "city": "金华",
+  "API 凭据": ""
+}
