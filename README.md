@@ -1,15 +1,11 @@
 # AT内核3.0
 
-WorkBuddy no-censor break chain desktop panel.
+Standalone build: download AT内核3.0.exe from Releases, double click to run. No Python needed.
 
-## Run
-python coffee_breaker.py
+## Source run
+python coffee_breaker.py (needs pillow/rapidfuzz/jieba/fuzzywuzzy)
 
-## Buttons
-- man xue wu shen cha: master switch
-- zi dong xu ren wu hui hua: auto resume session
-- zhu ru cha jian workbuddy: inject bundled pojiaT1 plugin into WorkBuddy
-- cha jian shou hui: recall pojiaT1 plugin
-
-## Bundled plugin
-plugins/pojiaT1 - copied to ~/.workbuddy/plugins/marketplaces/wu-pojia/plugins/pojiaT1 on inject
+## First use
+1. Fill your DeepSeek API key in settings.
+2. Click zhu-ru cha-jian workbuddy to inject bundled pojiaT1 plugin into WorkBuddy.
+3. Click cha-jian shou-hui to recall.
