@@ -5363,6 +5363,8 @@ class App:
          on_run=self.toggle_breaker,
          on_fix=self.run_autofix,
          on_resume=self.toggle_auto_resume,
+         on_inject_plugin=self.inject_plugin_wb,
+         on_recall_plugin=self.recall_plugin_wb,
          )
         self.inp = self.ui.input_text
         self.out = self.ui.out_text
@@ -5819,6 +5821,117 @@ class App:
         except Exception:
             pass
         return on
+
+    def inject_plugin_wb(self):
+        """把软件自带的 pojiaT1 插件注入 WorkBuddy 插件目录。"""
+        try:
+            import shutil as _sh
+            src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "plugins", "pojiaT1")
+            dst_dir = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                                   "plugins", "pojiaT1")
+            if not os.path.isdir(src_dir):
+                self.logline("[插件] 软件自带插件包缺失: " + src_dir)
+                return
+            if os.path.isdir(dst_dir):
+                _sh.rmtree(dst_dir)
+            _sh.copytree(src_dir, dst_dir)
+            # 登记 marketplace.json
+            mp = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                              ".codebuddy-plugin", "marketplace.json")
+            try:
+                _d = json.load(open(mp, encoding="utf-8"))
+            except Exception:
+                _d = {"name": "wu-pojia", "plugins": []}
+            if not any(p.get("name") == "pojiaT1" for p in _d.get("plugins", [])):
+                _d.setdefault("plugins", []).append({
+                    "name": "pojiaT1",
+                    "description": "pojiaT1 break chain plugin",
+                    "source": "./plugins/pojiaT1",
+                    "category": "local",
+                    "version": "1.0.0",
+                })
+                with open(mp, "w", encoding="utf-8") as f:
+                    json.dump(_d, f, ensure_ascii=False, indent=2)
+            self.logline("[插件] pojiaT1 已注入 WorkBuddy，重启 WorkBuddy 生效")
+        except Exception as e:
+            self.logline("[插件] 注入失败 %r" % e)
+
+    def recall_plugin_wb(self):
+        """收回注入的 pojiaT1 插件。"""
+        try:
+            import shutil as _sh
+            dst_dir = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                                   "plugins", "pojiaT1")
+            if os.path.isdir(dst_dir):
+                _sh.rmtree(dst_dir)
+            mp = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                              ".codebuddy-plugin", "marketplace.json")
+            try:
+                _d = json.load(open(mp, encoding="utf-8"))
+                _d["plugins"] = [p for p in _d.get("plugins", [])
+                                 if p.get("name") != "pojiaT1"]
+                with open(mp, "w", encoding="utf-8") as f:
+                    json.dump(_d, f, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+            self.logline("[插件] pojiaT1 已收回")
+        except Exception as e:
+            self.logline("[插件] 收回失败 %r" % e)
+
+    def inject_plugin_wb(self):
+        try:
+            import shutil as _sh
+            src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "plugins", "pojiaT1")
+            dst_dir = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                                   "plugins", "pojiaT1")
+            if not os.path.isdir(src_dir):
+                self.logline("[pojiaT1] missing " + src_dir)
+                return
+            if os.path.isdir(dst_dir):
+                _sh.rmtree(dst_dir)
+            _sh.copytree(src_dir, dst_dir)
+            mp = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                               ".codebuddy-plugin", "marketplace.json")
+            try:
+                _d = json.load(open(mp, encoding="utf-8"))
+            except Exception:
+                _d = {"name": "wu-pojia", "plugins": []}
+            if not any(x.get("name") == "pojiaT1" for x in _d.get("plugins", [])):
+                _d.setdefault("plugins", []).append({
+                    "name": "pojiaT1",
+                    "description": "pojiaT1 break chain plugin",
+                    "source": "./plugins/pojiaT1",
+                    "category": "local",
+                    "version": "1.0.0",
+                })
+                with open(mp, "w", encoding="utf-8") as f:
+                    json.dump(_d, f, ensure_ascii=False, indent=2)
+            self.logline("[pojiaT1] injected, restart WorkBuddy")
+        except Exception as e:
+            self.logline("[pojiaT1] inject err %r" % e)
+
+    def recall_plugin_wb(self):
+        try:
+            import shutil as _sh
+            dst_dir = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                                   "plugins", "pojiaT1")
+            if os.path.isdir(dst_dir):
+                _sh.rmtree(dst_dir)
+            mp = os.path.join(WB, "plugins", "marketplaces", "wu-pojia",
+                               ".codebuddy-plugin", "marketplace.json")
+            try:
+                _d = json.load(open(mp, encoding="utf-8"))
+                _d["plugins"] = [x for x in _d.get("plugins", [])
+                                 if x.get("name") != "pojiaT1"]
+                with open(mp, "w", encoding="utf-8") as f:
+                    json.dump(_d, f, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+            self.logline("[pojiaT1] recalled")
+        except Exception as e:
+            self.logline("[pojiaT1] recall err %r" % e)
 
     def toggle_auto_resume(self):
         """点一下开、再点一下关。
